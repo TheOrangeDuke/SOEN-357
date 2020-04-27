@@ -1,0 +1,55 @@
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
+}
+
+group 'com.traynotes'
+version '1.0-SNAPSHOT'
+
+wrapper {
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+dependencies {
+    compile (
+            //AWS
+            'com.amazonaws:aws-lambda-java-core:1.2.0',
+            'com.amazonaws:aws-lambda-java-events:2.2.7',
+            //MAILGUN
+            'net.sargue:mailgun:1.9.0',
+            //MONGO
+            'org.mongodb:mongo-java-driver:3.12.1',
+            //UTILS
+            'com.google.code.gson:gson:2.8.6'
+    )
+
+    testCompile (
+        platform("org.spockframework:spock-bom:2.0-M1-groovy-2.5"),
+        "org.spockframework:spock-core",
+
+        // optional
+        "org.hamcrest:hamcrest-core:1.3",
+        "net.bytebuddy:byte-buddy:1.9.3",
+        "org.objenesis:objenesis:2.6"
+    )
+}
+
+task buildZip(type: Zip) {
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtimeClasspath
+    }
+}
+
+build.dependsOn buildZip
